@@ -38,17 +38,26 @@ public class MillerRabin {
         return true;
     }
 
-    protected static boolean millerTest(BigInteger n, BigInteger d) {
+    /**
+     * Realiza o teste específico de Miller-Rabin, que será executado t vezes.
+     * @param n número a ser testado.
+     * @param m a parte ímpar de n - 1.
+     * @return false se n for composto e true se n for provavelmente primo.
+     */
+    protected static boolean millerTest(BigInteger n, BigInteger m) {
         BigInteger n1 = n.subtract(BigInteger.ONE);  // n - 1
 
-        BigInteger a = getRandomBigInteger(BigInteger.TWO, n);
-        BigInteger x = a.modPow(d, n);
+        // Calcula um a aleatório no intervalo [2, n - 1)
+        BigInteger a = getRandomBigInteger(BigInteger.TWO, n1);
+        // Calcula x = a^m (mod n)
+        BigInteger x = a.modPow(m, n);
 
         if (x.equals(BigInteger.ONE) || x.equals(n1)) return true;
 
-        while (!d.equals(n1)) {
+        // Enquanto m for diferente de n-1, realiza alguns passos
+        while (!m.equals(n1)) {
             x = x.modPow(BigInteger.TWO, n);
-            d = d.multiply(BigInteger.TWO);
+            m = m.multiply(BigInteger.TWO);
 
             if (x.equals(BigInteger.ONE)) return false;
             if (x.equals(n1)) return true;
@@ -56,6 +65,12 @@ public class MillerRabin {
         return false;
     }
 
+    /**
+     * Gera um número aleatório no intervalo [min, max).
+     * @param min início do range.
+     * @param max fim do range (não incluso).
+     * @return BigInteger aleatório gerado.
+     */
     protected static BigInteger getRandomBigInteger(BigInteger min, BigInteger max) {
         // Cria um gerador de números aleatórios
         SecureRandom secureRandom = new SecureRandom();
@@ -63,7 +78,7 @@ public class MillerRabin {
         // Gera um número aleatório
         BigInteger randomBigInteger = new BigInteger(max.bitLength(), secureRandom);
 
-        // Garante que o número gerado está dentro do intervalo [2, n-1]
+        // Garante que o número gerado está dentro do intervalo [2, n-1)
         while (randomBigInteger.compareTo(min) < 0 || randomBigInteger.compareTo(max) >= 0) {
             randomBigInteger = new BigInteger(max.bitLength(), secureRandom);
         }

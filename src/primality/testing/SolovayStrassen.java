@@ -12,21 +12,33 @@ public class SolovayStrassen {
      * @return false se n for composto e true se n for provavelmente primo.
      */
     public static boolean isPrime(BigInteger n, int t) {
+        // Testa caso base
         if (n.compareTo(BigInteger.TWO) < 0) return false;
 
+        // Realiza o teste t vezes
         for (int i = 0; i < t; i++) {
+            // Calcula um a aleatório no intervalo [2, n - 1]
             BigInteger a = getRandomBigInteger(BigInteger.TWO, n);
 
+            // Calcula o símbolo de Jacobi
             int jacobianSymbol = jacobi(a, n);
             BigInteger y = a.modPow(n.subtract(BigInteger.ONE).divide(BigInteger.TWO), n);
+
+            // Caso o símbolo de Jacobi for 0 ou a congruência não for satisfeita, o número é composto
             if (jacobianSymbol == 0 || !BigInteger.valueOf(jacobianSymbol).subtract(y).mod(n).equals(BigInteger.ZERO)) {
-                return false; // n é composto
+                return false;
             }
         }
-        return true; // n é provavelmente primo
+        return true;
     }
 
-    private static int jacobi(BigInteger a, BigInteger n) {
+    /**
+     * Calcula o símbolo de Jacobi.
+     * @param a numerador.
+     * @param n denominador.
+     * @return número correspondente ao símbolo de Jacobi.
+     */
+    protected static int jacobi(BigInteger a, BigInteger n) {
         a = a.mod(n);
         int jacobi = 1;
         BigInteger mod8;
@@ -49,6 +61,12 @@ public class SolovayStrassen {
         return (n.equals(BigInteger.ONE) ? jacobi : 0);
     }
 
+    /**
+     * Gera um número aleatório no intervalo [min, max).
+     * @param min início do range.
+     * @param max fim do range (não incluso).
+     * @return BigInteger aleatório gerado.
+     */
     protected static BigInteger getRandomBigInteger(BigInteger min, BigInteger max) {
         // Cria um gerador de números aleatórios
         SecureRandom secureRandom = new SecureRandom();
